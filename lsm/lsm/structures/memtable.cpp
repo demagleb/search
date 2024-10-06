@@ -20,6 +20,7 @@ std::generator<structures::Row&> MemTable::getByKeyRange(
     while (iter != table_.end() && iter->first <= right) {
         Row row(iter->first, iter->second);
         co_yield row;
+        ++iter;
     }
 }
 
@@ -39,7 +40,7 @@ MemTable fromStreamImpl<MemTable>(std::istream& istream)
 {
     SSTable sstable(istream);
     MemTable memtable;
-    for (auto& row : sstable.readAll()) {
+    for (auto& row : sstable.getAll()) {
         memtable.insert(std::move(row));
     }
     return memtable;

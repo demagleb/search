@@ -4,7 +4,6 @@
 #include <lsm/structures/memtable.hpp>
 #include <lsm/structures/row.hpp>
 
-
 #include <filesystem>
 #include <generator>
 #include <optional>
@@ -37,7 +36,6 @@ public:
     void finalize() &&;
 
 private:
-    std::generator<structures::Row&> merge(std::vector<std::generator<structures::Row&>> ranges);
     void dump(std::generator<structures::Row&> values, size_t expectedKeysCount, uint32_t level);
 
     const fs::path lsmTreeDir_;

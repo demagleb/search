@@ -16,7 +16,7 @@ public:
     std::generator<Row&> getByKeyRange(const std::string& left, const std::string& right) const;
     std::generator<Row&> getAll() const;
 
-    void insert(Row row) { table_.insert({std::move(row.key()), std::move(row.value())}); };
+    void insert(Row row) { table_[row.key()] = row.value(); };
 
     const std::map<std::string, std::string>& table() const { return table_; }
 private:

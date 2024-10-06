@@ -66,7 +66,7 @@ std::generator<Row&> IndexedSSTable::getByKeyRange(const std::string& left, cons
 std::generator<Row&> IndexedSSTable::getAll()
 {
     sstable_.setPos(0);
-    return sstable_.readAll();
+    return sstable_.getAll();
 }
 
 } // namespace lsm::structures

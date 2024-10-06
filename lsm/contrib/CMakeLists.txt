@@ -30,3 +30,20 @@ FetchContent_Populate(stdgenerator)
 
 add_library(stdgenerator INTERFACE)
 target_include_directories(stdgenerator INTERFACE ${stdgenerator_SOURCE_DIR}/include)
+
+
+FetchContent_Declare(
+    argparse
+    GIT_REPOSITORY https://github.com/p-ranav/argparse.git
+    GIT_TAG        master
+)
+
+FetchContent_MakeAvailable(argparse)
+
+FetchContent_Declare(
+    cli
+    GIT_REPOSITORY https://github.com/daniele77/cli.git
+    GIT_TAG        master
+)
+
+FetchContent_MakeAvailable(cli)

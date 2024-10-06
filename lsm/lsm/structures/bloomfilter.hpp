@@ -20,8 +20,8 @@ public:
     bool hasValueFalsePositive(std::string_view key) const;
     void put(std::string_view key);
 
-    const std::vector<std::byte>& filter() const;
-    const std::vector<uint64_t>& hashSeeds() const;
+    const std::vector<std::byte>& filter() const { return filter_; };
+    const std::vector<uint64_t>& hashSeeds() const { return hashSeeds_; };
 private:
     std::vector<std::byte> filter_;
     const std::vector<uint64_t> hashSeeds_;
