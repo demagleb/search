@@ -2,7 +2,10 @@ set(LIB_TARGET lsm)
 
 set(LIB_DEPENDENCIES
     pthread
-    fmt)
+    fmt
+    stdgenerator
+    PRIVATE rapidhash
+)
 
 get_filename_component(LIB_INCLUDE_PATH ".." ABSOLUTE)
 get_filename_component(LIB_PATH "." ABSOLUTE)

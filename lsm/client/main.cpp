@@ -1,8 +1,8 @@
-#include <fmt/core.h>
 #include <lsm/lsm.hpp>
+#include <fmt/core.h>
 
 int main()
 {
-    lsm::foo();
+    // lsm::foo();
     return 0;
 }
