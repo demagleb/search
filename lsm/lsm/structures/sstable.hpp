@@ -12,7 +12,7 @@ public:
         : stream_(stream)
     { }
 
-    void setPos(std::streampos pos);
+    void setPos(std::streamoff pos);
 
     Row getRow();
     std::generator<Row&> getAll();

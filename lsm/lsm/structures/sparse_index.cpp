@@ -5,13 +5,13 @@ namespace lsm::structures {
 
 std::streamoff SparseIndex::getStartPos(const std::string& key) const
 {
-    auto iter = index_.lower_bound(key);
+    auto iter = index_.upper_bound(key);
 
     if (iter == index_.begin()) {
         return 0;
     }
-
-    return (--iter)->second;
+    --iter;
+    return iter->second;
 }
 
 void SparseIndex::emplace(std::string key, std::streamoff value)
@@ -27,11 +27,10 @@ SparseIndex fromStreamImpl<SparseIndex>(std::istream& istream)
     SSTable sstable(istream);
     std::map<std::string, std::streamoff> index;
     for (Row& row : sstable.getAll()) {
-        std::streamoff value = std::stol(std::string(row.value()));
+        std::streamoff value = std::stol(row.value());
         index.emplace(std::move(row.key()), value);
     }
     return SparseIndex(std::move(index));
-
 }
 
 template <>

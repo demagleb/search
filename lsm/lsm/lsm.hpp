@@ -27,13 +27,19 @@ public:
         size_t maxMemtableSize = DEFAULT_MAX_MEMTABLE_SIZE,
         size_t sparseIndexFrequency = DEFAULT_SPARSE_INDEX_FREQUENCY);
 
+    ~LSMTree();
+
     std::optional<structures::Row> getByKey(const std::string& key);
     std::generator<structures::Row&> getByKeyRange(const std::string& left, const std::string& right);
+    std::generator<structures::Row&> getAll();
 
     void insert(std::generator<structures::Row&> rows);
-    void dump();
+    void insert(structures::Row row);
 
-    void finalize() &&;
+    void erase(std::string key);
+    void erase(std::generator<std::string&> key);
+
+    void dump();
 
 private:
     void dump(std::generator<structures::Row&> values, size_t expectedKeysCount, uint32_t level);

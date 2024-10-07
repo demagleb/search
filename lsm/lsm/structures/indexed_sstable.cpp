@@ -1,4 +1,4 @@
-#include "lsm/structures/sstable.hpp"
+#include <fstream>
 #include <lsm/structures/indexed_sstable.hpp>
 
 namespace lsm::structures {
@@ -7,17 +7,18 @@ IndexedSSTable::IndexedSSTable(
     const fs::path& sstablePath,
     const fs::path& bloomFilterPath,
     const fs::path& indexPath)
-    : sstableStream_(sstablePath)
-    , sstable_(sstableStream_)
+    : sstableStream_(std::make_unique<std::ifstream>(sstablePath, std::ios_base::binary))
+    , sstable_(*sstableStream_)
     , bloomFilter_([&] {
-        std::ifstream stream(bloomFilterPath);
+        std::ifstream stream(bloomFilterPath, std::ios_base::binary);
         return marshal::fromStream<structures::BloomFilter>(stream);
     }())
     , index_([&] {
-        std::ifstream stream(indexPath);
+        std::ifstream stream(indexPath, std::ios_base::binary);
         return marshal::fromStream<structures::SparseIndex>(stream);
     }())
-{ }
+{
+}
 
 std::optional<Row> IndexedSSTable::getByKey(const std::string& key)
 {

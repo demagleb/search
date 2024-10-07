@@ -8,7 +8,11 @@ class SparseIndex {
 public:
     SparseIndex(std::map<std::string, std::streamoff> index = {})
         : index_(std::move(index))
-    { }
+    {
+        for (const auto& [k, v] : index) {
+            // std::cerr << "sparseIndex: key: " << k << " offset: " << v << std::endl;
+        }
+    }
 
     std::streamoff getStartPos(const std::string& key) const;
 

@@ -39,6 +39,7 @@ std::streamoff toStreamImpl<Row>(const Row& value, std::ostream& ostream)
     ostream << std::string_view(reinterpret_cast<const char*>(&valueSize), sizeof(valueSize));
     ostream << value.key();
     ostream << value.value();
+    // std::cerr << "row write: " << pos << std::endl;
     return pos;
 }
 

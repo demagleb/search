@@ -1,15 +1,21 @@
+#include "lsm/structures/row.hpp"
+#include <ios>
 #include <lsm/structures/sstable.hpp>
 #include <lsm/structures/marshal.hpp>
 
 namespace lsm::structures {
 
-void SSTable::setPos(std::streampos pos)
+void SSTable::setPos(std::streamoff pos)
 {
-    stream_.seekg(pos);
+    // std::cerr << "sstable: offset " << stream_.tellg() << std::endl;
+    // std::cerr << "sstable: set offset to " << pos << std::endl;
+    stream_.clear();
+    stream_.seekg(pos, std::ios_base::beg);
 }
 
 Row SSTable::getRow()
 {
+    // std::cerr << "getRow" << std::endl;
     return marshal::fromStream<Row>(stream_);
 }
 
@@ -37,6 +43,9 @@ std::generator<std::pair<std::string, std::streamoff>&> writeSSTableWithOffsets(
 {
     for (const auto& row : rows) {
         auto offset = marshal::toStream(row, ostream);
+        // std::cerr << "sstable write key: " << row.key()
+            // << " value: " << row.value()
+            // << " offset: " << offset << std::endl;
 
         std::pair<std::string, std::streamoff> keyOffset{
             std::move(row.key()),

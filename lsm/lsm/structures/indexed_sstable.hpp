@@ -32,7 +32,7 @@ public:
     std::generator<Row&> getAll();
 
 private:
-    std::ifstream sstableStream_;
+    std::unique_ptr<std::ifstream> sstableStream_;
     SSTable sstable_;
     structures::BloomFilter bloomFilter_;
     structures::SparseIndex index_;
