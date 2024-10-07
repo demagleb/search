@@ -30,11 +30,9 @@ bool BloomFilter::hasValueFalsePositive(std::string_view key) const
         auto hash = rapidhash_withSeed(key.data(), key.size(), seed) % filter_.size();
         auto positive = filter_[hash / 8] & static_cast<std::byte>(1 << (hash & 7ul));
         if (positive == std::byte{0}) {
-            // std::cerr << "boomfilter do not have \"" << key << "\"" << std::endl;
             return false;
         }
     }
-    // std::cerr << "boomfilter have \"" << key << "\"" << std::endl;
     return true;
 }
 

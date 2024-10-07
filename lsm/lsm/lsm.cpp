@@ -62,8 +62,6 @@ LSMTree::LSMTree(
     }
 
     for (auto level : levels) {
-        // std::cerr << "level: " << level << std::endl;
-
         auto sstablePath = SSTablePath(lsmTreeDir_, level);
         auto bloomfilterPath = bloomFilterPath(lsmTreeDir_, level);
         auto sparseindexPath = sparseIndexPath(lsmTreeDir_, level);
@@ -174,8 +172,6 @@ void LSMTree::dump()
 
 void LSMTree::dump(std::generator<structures::Row&> rows, size_t expectedKeysCount, uint32_t level)
 {
-    // std::cerr << "dump level: " << level << std::endl;
-
     structures::BloomFilter bloomfilter(expectedKeysCount);
     structures::SparseIndex sparseIndex;
 
@@ -193,7 +189,6 @@ void LSMTree::dump(std::generator<structures::Row&> rows, size_t expectedKeysCou
     for (auto& [key, offset] : offsets) {
         ++index;
         if (index % sparseIndexFrequency_ == 0) {
-            // std::cerr << "sparseIndex: insert \"" << key << "\" " << offset << std::endl;
             sparseIndex.emplace(key, offset);
         }
     }
