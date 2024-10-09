@@ -1,6 +1,13 @@
 include(FetchContent)
 
 FetchContent_Declare(
+    abseil
+    GIT_REPOSITORY https://github.com/abseil/abseil-cpp.git
+    GIT_TAG master
+)
+FetchContent_MakeAvailable(abseil)
+
+FetchContent_Declare(
     fmt
     GIT_REPOSITORY https://github.com/fmtlib/fmt.git
     GIT_TAG master
@@ -34,6 +41,15 @@ FetchContent_Declare(
     GIT_TAG        master
 )
 FetchContent_MakeAvailable(argparse)
+
+FetchContent_Declare(
+    flat_map
+    GIT_REPOSITORY https://github.com/Flast/flat_map.git
+    GIT_TAG        master
+)
+FetchContent_Populate(flat_map)
+add_library(flat_map INTERFACE)
+target_include_directories(flat_map INTERFACE ${flat_map_SOURCE_DIR}/flat_map)
 
 FetchContent_Declare(
     googletest

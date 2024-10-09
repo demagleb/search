@@ -1,12 +1,12 @@
 #include <lsm/structures/marshal.hpp>
 
-#include <map>
+#include <absl/container/btree_map.h>
 
 namespace lsm::structures {
 
 class SparseIndex {
 public:
-    SparseIndex(std::map<std::string, std::streamoff> index = {})
+    SparseIndex(absl::btree_map<std::string, std::streamoff> index = {})
         : index_(std::move(index))
     { }
 
@@ -14,10 +14,10 @@ public:
 
     void emplace(std::string key, std::streamoff pos);
 
-    const std::map<std::string, std::streamoff> index() const { return index_; }
+    const absl::btree_map<std::string, std::streamoff> index() const { return index_; }
 
 private:
-    std::map<std::string, std::streamoff> index_;
+    absl::btree_map<std::string, std::streamoff> index_;
 };
 
 namespace marshal::impl {

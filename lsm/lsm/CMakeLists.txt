@@ -2,8 +2,10 @@ set(LIB_TARGET lsm)
 
 set(LIB_DEPENDENCIES
     pthread
+    absl::btree
     fmt
     stdgenerator
+    INTERFACE flat_map
     PRIVATE rapidhash
 )
 

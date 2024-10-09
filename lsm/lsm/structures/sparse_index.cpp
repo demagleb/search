@@ -25,7 +25,7 @@ template <>
 SparseIndex fromStreamImpl<SparseIndex>(std::istream& istream)
 {
     SSTable sstable(istream);
-    std::map<std::string, std::streamoff> index;
+    absl::btree_map<std::string, std::streamoff> index;
     for (Row& row : sstable.getAll()) {
         std::streamoff value = std::stol(row.value());
         index.emplace(std::move(row.key()), value);

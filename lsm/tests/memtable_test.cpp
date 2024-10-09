@@ -15,7 +15,6 @@ TEST_F(LSMFixture, memtable_get_by_key)
         ASSERT_EQ(lsmRow->key(), row.key());
         ASSERT_EQ(lsmRow->value(), row.value());
     }
-    std::cerr << "good" << std::endl;
 }
 
 TEST_F(LSMFixture, memtable_get_all)

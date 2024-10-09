@@ -15,7 +15,7 @@ namespace {
 
 namespace fs = std::filesystem;
 
-constexpr size_t DEFAULT_MAX_MEMTABLE_SIZE = 1e6;
+constexpr size_t DEFAULT_MAX_MEMTABLE_SIZE = 10'000;
 constexpr size_t DEFAULT_SPARSE_INDEX_FREQUENCY = 100;
 
 } // namespace

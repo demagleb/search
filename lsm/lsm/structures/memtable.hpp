@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iterator>
 #include <lsm/structures/marshal.hpp>
 #include <lsm/structures/row.hpp>
 
@@ -16,7 +17,7 @@ public:
     std::generator<Row&> getByKeyRange(const std::string& left, const std::string& right) const;
     std::generator<Row&> getAll() const;
 
-    void insert(Row row) { table_[row.key()] = row.value(); };
+    void insert(Row row) { table_.insert_or_assign(std::move(row.key()), std::move(row.value())); };
 
     const std::map<std::string, std::string>& table() const { return table_; }
 private:
