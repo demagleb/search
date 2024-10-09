@@ -5,7 +5,7 @@ set(LIB_DEPENDENCIES
     absl::btree
     fmt
     stdgenerator
-    INTERFACE flat_map
+    flat_map
     PRIVATE rapidhash
 )
 

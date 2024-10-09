@@ -1,23 +1,30 @@
 #include <lsm/structures/marshal.hpp>
 
 #include <absl/container/btree_map.h>
+#include <flat_map/flat_map.hpp>
 
 namespace lsm::structures {
 
 class SparseIndex {
 public:
-    SparseIndex(absl::btree_map<std::string, std::streamoff> index = {})
+    using TMap = flat_map::flat_map<
+        std::string,
+        std::streamoff,
+        std::less<>,
+        std::vector<std::pair<std::string, std::streamoff>>>;
+
+    SparseIndex(TMap index = {})
         : index_(std::move(index))
     { }
 
     std::streamoff getStartPos(const std::string& key) const;
 
-    void emplace(std::string key, std::streamoff pos);
+    void push_back(std::string key, std::streamoff pos);
 
-    const absl::btree_map<std::string, std::streamoff> index() const { return index_; }
+    const TMap index() const { return index_; }
 
 private:
-    absl::btree_map<std::string, std::streamoff> index_;
+    TMap index_;
 };
 
 namespace marshal::impl {

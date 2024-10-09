@@ -14,9 +14,9 @@ std::streamoff SparseIndex::getStartPos(const std::string& key) const
     return iter->second;
 }
 
-void SparseIndex::emplace(std::string key, std::streamoff value)
+void SparseIndex::push_back(std::string key, std::streamoff value)
 {
-    index_.emplace(std::move(key), value);
+    index_.emplace_hint(index_.end(), std::move(key), value);
 }
 
 namespace marshal::impl {
@@ -25,10 +25,10 @@ template <>
 SparseIndex fromStreamImpl<SparseIndex>(std::istream& istream)
 {
     SSTable sstable(istream);
-    absl::btree_map<std::string, std::streamoff> index;
+    SparseIndex::TMap index;
     for (Row& row : sstable.getAll()) {
         std::streamoff value = std::stol(row.value());
-        index.emplace(std::move(row.key()), value);
+        index.emplace_hint(index.end(), std::move(row.key()), value);
     }
     return SparseIndex(std::move(index));
 }

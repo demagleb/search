@@ -49,7 +49,7 @@ FetchContent_Declare(
 )
 FetchContent_Populate(flat_map)
 add_library(flat_map INTERFACE)
-target_include_directories(flat_map INTERFACE ${flat_map_SOURCE_DIR}/flat_map)
+target_include_directories(flat_map INTERFACE ${flat_map_SOURCE_DIR})
 
 FetchContent_Declare(
     googletest

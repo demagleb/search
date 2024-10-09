@@ -190,7 +190,7 @@ void LSMTree::dump(std::generator<structures::Row&> rows, size_t expectedKeysCou
     for (auto& [key, offset] : offsets) {
         ++index;
         if (index % sparseIndexFrequency_ == 0) {
-            sparseIndex.emplace(key, offset);
+            sparseIndex.push_back(key, offset);
         }
     }
     std::ofstream bloomFilterStream(bloomFilterPath(lsmTreeDir_, level), std::ios_base::binary);
