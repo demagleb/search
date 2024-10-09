@@ -159,7 +159,6 @@ void LSMTree::dump()
     bool removeTombstones = tables_.lower_bound(level) == tables_.end();
 
     dump(merge(std::move(ranges), removeTombstones), maxMemtableSize_, level);
-
     for (uint32_t i = 0; i < level; ++i) {
         tables_.erase(i);
 
@@ -177,13 +176,15 @@ void LSMTree::dump(std::generator<structures::Row&> rows, size_t expectedKeysCou
 
     std::ofstream sstableOffsteam(SSTablePath(lsmTreeDir_, level), std::ios_base::binary);
 
-    auto offsets = structures::writeSSTableWithOffsets(sstableOffsteam, [&] -> std::generator<structures::Row&> {
+    auto rowsWithBloomCallback = [&] -> std::generator<structures::Row&> {
         for (auto& row : rows) {
             bloomfilter.put(row.key());
             co_yield row;
         }
-    }());
+    };
 
+    auto offsets =
+    structures::writeSSTableWithOffsets(sstableOffsteam,rowsWithBloomCallback());
 
     size_t index = 0;
     for (auto& [key, offset] : offsets) {

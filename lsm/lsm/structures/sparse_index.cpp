@@ -42,9 +42,9 @@ std::streamoff toStreamImpl<SparseIndex>(const SparseIndex& value, std::ostream&
             Row row(k, std::to_string(v));
             co_yield row;
         }
-    }();
+    };
 
-    writeSSTable(ostream, std::move(rows));
+    writeSSTable(ostream, rows());
     return pos;
 }
 

@@ -20,6 +20,8 @@ constexpr size_t DEFAULT_SPARSE_INDEX_FREQUENCY = 100;
 
 } // namespace
 
+using structures::Row;
+
 class LSMTree {
 public:
     LSMTree(
@@ -29,12 +31,12 @@ public:
 
     ~LSMTree();
 
-    std::optional<structures::Row> getByKey(const std::string& key);
-    std::generator<structures::Row&> getByKeyRange(const std::string& left, const std::string& right);
-    std::generator<structures::Row&> getAll();
+    std::optional<Row> getByKey(const std::string& key);
+    std::generator<Row&> getByKeyRange(const std::string& left, const std::string& right);
+    std::generator<Row&> getAll();
 
-    void insert(std::generator<structures::Row&> rows);
-    void insert(structures::Row row);
+    void insert(std::generator<Row&> rows);
+    void insert(Row row);
 
     void erase(std::string key);
     void erase(std::generator<std::string&> key);
@@ -42,7 +44,7 @@ public:
     void dump();
 
 private:
-    void dump(std::generator<structures::Row&> values, size_t expectedKeysCount, uint32_t level);
+    void dump(std::generator<Row&> values, size_t expectedKeysCount, uint32_t level);
 
     const fs::path lsmTreeDir_;
     const size_t maxMemtableSize_;

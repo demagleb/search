@@ -7,7 +7,7 @@ namespace lsm::structures {
 std::optional<structures::Row> MemTable::getByKey(const std::string& key) const
 {
     auto iter = table_.find(key);
-    if (iter == table_.end()) {
+    if (iter == table_.end() || iter->second.empty()) {
         return std::nullopt;
     }
     return Row(iter->first, iter->second);

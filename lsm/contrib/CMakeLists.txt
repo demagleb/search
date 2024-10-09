@@ -14,9 +14,7 @@ FetchContent_Declare(
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
 )
-
 FetchContent_Populate(rapidhash)
-
 add_library(rapidhash INTERFACE)
 target_include_directories(rapidhash INTERFACE ${rapidhash_SOURCE_DIR})
 
@@ -25,9 +23,7 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/lewissbaker/generator.git
     GIT_TAG        main
 )
-
 FetchContent_Populate(stdgenerator)
-
 add_library(stdgenerator INTERFACE)
 target_include_directories(stdgenerator INTERFACE ${stdgenerator_SOURCE_DIR}/include)
 
@@ -37,13 +33,17 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/p-ranav/argparse.git
     GIT_TAG        master
 )
-
 FetchContent_MakeAvailable(argparse)
 
 FetchContent_Declare(
-    cli
-    GIT_REPOSITORY https://github.com/daniele77/cli.git
-    GIT_TAG        master
+    googletest
+    URL https://github.com/google/googletest/releases/download/v1.15.2/googletest-1.15.2.tar.gz
 )
+FetchContent_MakeAvailable(googletest)
 
-FetchContent_MakeAvailable(cli)
+FetchContent_Declare(googlebenchmark
+    GIT_REPOSITORY https://github.com/google/benchmark.git
+    GIT_TAG main
+)
+set(BENCHMARK_ENABLE_TESTING OFF)
+FetchContent_MakeAvailable(googlebenchmark)
