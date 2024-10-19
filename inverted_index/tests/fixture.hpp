@@ -1,4 +1,4 @@
-#include <lsm/lsm.hpp>
+#include <inverted_index/inverted_index.hpp>
 #include <gtest/gtest.h>
 #include <filesystem>
 #include <memory>
@@ -25,42 +25,32 @@ inline std::string dirName()
 
 } // namespace
 
-constexpr size_t KEY_SIZE = 10;
-
-inline std::generator<lsm::Row&> generateRows(size_t size) {
-    for (size_t num = 0; num < size; ++num) {
-        auto snum = std::to_string(num);
-        snum = std::string(KEY_SIZE - snum.size(), '0') + snum;
-        lsm::Row row(snum, snum);
-        co_yield row;
-    }
-}
-
-class LSMFixture : public testing::Test {
+class InvertedIndexFixture : public testing::Test {
 public:
-    LSMFixture()
+    InvertedIndexFixture()
         : dir_(std::filesystem::temp_directory_path() / dirName())
     {
         std::filesystem::create_directory(dir_);
-        tree_ = std::make_unique<lsm::LSMTree>(dir_, MaxMemtableSize, SparseIndexFrequency);
+        index_ = std::make_unique<inverted_index::InvertedIndex>(dir_);
     }
 
-    ~LSMFixture()
+    ~InvertedIndexFixture()
     {
-        tree_->finish();
-        tree_.reset();
-        std::filesystem::remove_all(dir_);
     }
 
-    lsm::LSMTree& lsmTree() { return *tree_; }
+    inverted_index::InvertedIndex& index() { return *index_; }
 
     const std::filesystem::path& dir() const { return dir_; }
 
-
+    void finish() {
+        index_->finish();
+        index_.reset();
+        std::filesystem::remove_all(dir_);
+    }
 
 private:
     const std::filesystem::path dir_;
-    std::unique_ptr<lsm::LSMTree> tree_;
+    std::unique_ptr<inverted_index::InvertedIndex> index_;
 };
 
 // LSMFixture<> getFixture() { return LSMFixture<>(); };

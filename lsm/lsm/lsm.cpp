@@ -41,10 +41,12 @@ fs::path sparseIndexPath(fs::path dir, uint32_t level)
 LSMTree::LSMTree(
     fs::path lsmTreeDir,
     size_t maxMemtableSize,
-    size_t sparseIndexFrequency)
+    size_t sparseIndexFrequency,
+    MergeFunction merge)
     : lsmTreeDir_(std::move(lsmTreeDir))
     , maxMemtableSize_(maxMemtableSize)
     , sparseIndexFrequency_(sparseIndexFrequency)
+    , merge_(std::move(merge))
 {
     if (!fs::is_directory(lsmTreeDir_)) {
         throw std::runtime_error(fmt::format("{} must be a directory", lsmTreeDir_.string()));
@@ -72,9 +74,15 @@ LSMTree::LSMTree(
     }
 }
 
-LSMTree::~LSMTree()
+void LSMTree::finish()
 {
     dump();
+    finished_ = true;
+}
+
+LSMTree::~LSMTree()
+{
+    assert(finished_);
 }
 
 std::optional<structures::Row> LSMTree::getByKey(const std::string& key) {
@@ -99,7 +107,7 @@ std::generator<structures::Row&> LSMTree::getByKeyRange(const std::string& left,
     for (auto& [_, indexedSSTable] : tables_) {
         ranges.push_back(indexedSSTable.getByKeyRange(left, right));
     }
-    return merge(std::move(ranges), true);
+    return merge_(std::move(ranges), true);
 }
 
 std::generator<structures::Row&> LSMTree::getAll()
@@ -109,7 +117,7 @@ std::generator<structures::Row&> LSMTree::getAll()
     for (auto& [_, indexedSSTable] : tables_) {
         ranges.push_back(indexedSSTable.getAll());
     }
-    return merge(std::move(ranges), true);
+    return merge_(std::move(ranges), true);
 }
 
 void LSMTree::insert(structures::Row row) {
@@ -158,7 +166,7 @@ void LSMTree::dump()
     }
     bool removeTombstones = tables_.lower_bound(level) == tables_.end();
 
-    dump(merge(std::move(ranges), removeTombstones), maxMemtableSize_, level);
+    dump(merge_(std::move(ranges), removeTombstones), maxMemtableSize_, level);
     for (uint32_t i = 0; i < level; ++i) {
         tables_.erase(i);
 

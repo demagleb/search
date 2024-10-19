@@ -1,13 +1,14 @@
 #pragma once
 
+#include <functional>
 #include <lsm/structures/indexed_sstable.hpp>
 #include <lsm/structures/memtable.hpp>
 #include <lsm/structures/row.hpp>
+#include <lsm/merge.hpp>
 
 #include <filesystem>
 #include <generator>
 #include <optional>
-#include <vector>
 
 namespace lsm {
 
@@ -27,7 +28,8 @@ public:
     LSMTree(
         fs::path lsmTreeDir,
         size_t maxMemtableSize = DEFAULT_MAX_MEMTABLE_SIZE,
-        size_t sparseIndexFrequency = DEFAULT_SPARSE_INDEX_FREQUENCY);
+        size_t sparseIndexFrequency = DEFAULT_SPARSE_INDEX_FREQUENCY,
+        MergeFunction merge = lsm::merge);
 
     ~LSMTree();
 
@@ -43,12 +45,16 @@ public:
 
     void dump();
 
+    void finish();
+
 private:
     void dump(std::generator<Row&> values, size_t expectedKeysCount, uint32_t level);
 
+    bool finished_ = false;
     const fs::path lsmTreeDir_;
     const size_t maxMemtableSize_;
     const size_t sparseIndexFrequency_;
+    const MergeFunction merge_;
 
     structures::MemTable memtable_;
     std::map<uint32_t, structures::IndexedSSTable> tables_;

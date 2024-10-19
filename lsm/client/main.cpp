@@ -19,6 +19,10 @@ public:
         : tree_(path)
     { }
 
+    ~LSMClient() {
+        tree_.finish();
+    }
+
     std::string insertRow(const std::string& key, const std::string& value) {
         tree_.insert(lsm::structures::Row(key, value));
         return fmt::format("inserted key: \"{}\" value: \"{}\"", key, value);

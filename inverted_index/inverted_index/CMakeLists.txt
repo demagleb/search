@@ -1,11 +1,11 @@
-set(LIB_TARGET lsm)
+set(LIB_TARGET inverted_index)
 
 set(LIB_DEPENDENCIES
     pthread
     fmt
-    stdgenerator
-    flat_map
-    PRIVATE rapidhash
+    lsm
+    roaring::roaring
+    porter2-stemmer
 )
 
 get_filename_component(LIB_INCLUDE_PATH ".." ABSOLUTE)

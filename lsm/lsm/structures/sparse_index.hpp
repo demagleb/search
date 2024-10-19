@@ -1,6 +1,5 @@
 #include <lsm/structures/marshal.hpp>
 
-#include <absl/container/btree_map.h>
 #include <flat_map/flat_map.hpp>
 
 namespace lsm::structures {
