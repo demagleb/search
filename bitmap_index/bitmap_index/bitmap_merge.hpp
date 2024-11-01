@@ -1,3 +1,5 @@
+#pragma once
+
 #include <lsm/structures/row.hpp>
 
 #include <generator>

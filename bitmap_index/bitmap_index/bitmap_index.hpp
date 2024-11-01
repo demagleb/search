@@ -3,8 +3,6 @@
 #include <lsm/lsm.hpp>
 #include <roaring64map.hh>
 
-#include <unordered_map>
-
 namespace bitmap_index {
 
 namespace {
@@ -21,7 +19,8 @@ public:
 
     void insert(const std::string& key, uint64_t value);
 
-    roaring::Roaring64Map get(const std::string& key);
+    roaring::Roaring64Map getByKey(const std::string& key);
+    std::generator<roaring::Roaring64Map&> getByKeyRange(const std::string& left, const std::string& right);
 
     void dump();
 
@@ -29,7 +28,7 @@ public:
 private:
     bool finished_ = false;
     lsm::LSMTree lsmTree_;
-    std::unordered_map<std::string, roaring::Roaring64Map> memtable_;
+    std::map<std::string, roaring::Roaring64Map> memtable_;
 };
 
 } // namespace bitmap_index

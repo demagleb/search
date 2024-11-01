@@ -1,10 +1,10 @@
-#include <inverted_index/tokenize/tokenize.hpp>
-#include <inverted_index/tokenize/stop_words.hpp>
+#include <inverted_index/tokenize.hpp>
+#include <inverted_index/stop_words.hpp>
 #include <porter2_stemmer.h>
 
 #include <cctype>
 
-namespace inverted_index::tokenize {
+namespace inverted_index {
 
 std::generator<std::string&> tokenize(std::string_view doc)
 {
@@ -32,4 +32,4 @@ std::optional<std::string> prepareWord(std::string word)
     return std::nullopt;
 }
 
-} // namespace inverted_index::tokenizer
+} // namespace inverted_index

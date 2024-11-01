@@ -1,8 +1,8 @@
-#include <inverted_index/tokenize/stop_words.hpp>
+#include <inverted_index/stop_words.hpp>
 
 #include <unordered_set>
 
-namespace inverted_index::tokenize {
+namespace inverted_index {
 
 namespace {
 
@@ -194,4 +194,4 @@ bool isStopWord(std::string_view term) {
     return STOP_WORDS.contains(term);
 }
 
-} // namespace inverted_index::tokenize
+} // namespace inverted_index

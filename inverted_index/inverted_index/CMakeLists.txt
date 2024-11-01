@@ -3,8 +3,7 @@ set(LIB_TARGET inverted_index)
 set(LIB_DEPENDENCIES
     pthread
     fmt
-    lsm
-    roaring::roaring
+    bitmap_index
     porter2-stemmer
 )
 

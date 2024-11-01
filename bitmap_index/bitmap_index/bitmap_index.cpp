@@ -35,21 +35,41 @@ void BitmapIndex::insert(const std::string& key, uint64_t value)
     }
 }
 
-roaring::Roaring64Map BitmapIndex::get(const std::string& key)
+roaring::Roaring64Map BitmapIndex::getByKey(const std::string& key)
 {
     roaring::Roaring64Map bitmap;
     if (memtable_.contains(key)) {
         bitmap |= memtable_[key];
     }
-    std::vector<lsm::Row> rows;
     for (auto& row : lsmTree_.getByKeyRange(key, key)) {
-        rows.push_back(std::move(row));
-    }
-    assert(rows.size() <= 1);
-    if (rows.size() != 0) {
-        bitmap |= readBitmap(rows.front().value());
+        bitmap |= readBitmap(row.value());
     }
     return bitmap;
+}
+
+std::generator<roaring::Roaring64Map&> BitmapIndex::getByKeyRange(const std::string& left, const std::string& right)
+{
+    auto memtableIter = memtable_.lower_bound(left);
+    roaring::Roaring64Map bitmap;
+    for (auto& row : lsmTree_.getByKeyRange(left, right)) {
+        while (memtableIter != memtable_.end() && memtableIter->first < row.key()) {
+            bitmap = memtableIter->second;
+            co_yield bitmap;
+            ++memtableIter;
+        }
+        bitmap = readBitmap(row.value());
+        if (memtableIter != memtable_.end() && memtableIter->first == row.key()) {
+            bitmap |= memtableIter->second;
+            ++memtableIter;
+        }
+        co_yield bitmap;
+    }
+
+    while (memtableIter != memtable_.end() && memtableIter->first <= right) {
+        bitmap = memtableIter->second;
+        co_yield bitmap;
+        ++memtableIter;
+    }
 }
 
 void BitmapIndex::dump()

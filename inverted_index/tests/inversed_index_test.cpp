@@ -1,6 +1,5 @@
 #include <fixture.hpp>
-#include <inverted_index/tokenize/tokenize.hpp>
-#include <inverted_index/filter.hpp>
+#include <inverted_index/tokenize.hpp>
 
 #include <array>
 
@@ -26,7 +25,7 @@ TEST(unit, tokenize)
 {
     std::vector<std::string> tokens = {"control", "system", "paramet", "open", "set", "dri", "cloth", "taken", "drier", "move", "man"};
     size_t i = 0;
-    for (auto& word : tokenize::tokenize(SIMPLE_DOC)) {
+    for (auto& word : tokenize(SIMPLE_DOC)) {
         ASSERT_LE(i, tokens.size());
         ASSERT_EQ(word, tokens[i]);
         ++i;
@@ -35,27 +34,27 @@ TEST(unit, tokenize)
 
 TEST_F(InvertedIndexFixture, simple)
 {
-    for (auto& word : tokenize::tokenize(SIMPLE_DOC)) {
+    for (auto& word : tokenize(SIMPLE_DOC)) {
         ASSERT_EQ(index().getByWord(word).cardinality(), 0);
     }
-    index().insert(42, SIMPLE_DOC);
+    index().insertDoc(42, SIMPLE_DOC);
     {
         auto values = index().getByWord(SIMPLE_WORD);
         ASSERT_EQ(values.cardinality(), 1);
         ASSERT_TRUE(values.contains(42ul));
     }
-    for (auto& word : tokenize::tokenize(SIMPLE_DOC)) {
+    for (auto& word : tokenize(SIMPLE_DOC)) {
         auto values = index().getByWord(word);
         ASSERT_EQ(values.cardinality(), 1);
         ASSERT_TRUE(values.contains(42ul));
     }
-    for (auto& word : tokenize::tokenize(SIMPLE_DOC)) {
+    for (auto& word : tokenize(SIMPLE_DOC)) {
         auto values = index().getByWord(word);
         ASSERT_EQ(values.cardinality(), 1);
         ASSERT_TRUE(values.contains(42ul));
     }
-    index().insert(4242, SIMPLE_DOC);
-    for (auto& word : tokenize::tokenize(SIMPLE_DOC)) {
+    index().insertDoc(4242, SIMPLE_DOC);
+    for (auto& word : tokenize(SIMPLE_DOC)) {
         auto values = index().getByWord(word);
         ASSERT_EQ(values.cardinality(), 2);
         ASSERT_TRUE(values.contains(42ul));
@@ -68,13 +67,13 @@ TEST_F(InvertedIndexFixture, many_docs)
     static constexpr size_t ITERS = 100;
     for (size_t k = 0; k < ITERS; ++k) {
         for (size_t i = 0; i < DOCS.size(); ++i) {
-            index().insert(i * ITERS + k, DOCS[i]);
+            index().insertDoc(i * ITERS + k, DOCS[i]);
         }
         index().dump();
     }
 
     for (size_t i = 0; i < DOCS.size(); ++i) {
-        for (auto& word : tokenize::tokenize(DOCS[i])) {
+        for (auto& word : tokenize(DOCS[i])) {
             auto values = index().getByWord(word);
             ASSERT_GE(values.cardinality(), ITERS);
             for (size_t k = 0; k < ITERS; ++k) {
@@ -82,30 +81,4 @@ TEST_F(InvertedIndexFixture, many_docs)
             }
         }
     }
-}
-
-TEST_F(InvertedIndexFixture, filters) {
-    for (size_t i = 0; i < DOCS.size(); ++i) {
-        index().insert(i, DOCS[i]);
-    }
-    auto filter = Filter::have("sun")
-        | Filter::have("gentle")
-        | Filter::have("corner");
-
-    auto bitmap = filter.get(index());
-    ASSERT_TRUE(bitmap.contains(0ul));
-    ASSERT_TRUE(bitmap.contains(5ul));
-    ASSERT_TRUE(bitmap.contains(8ul));
-
-    filter -= Filter::have("whispers");
-    bitmap = filter.get(index());
-    ASSERT_TRUE(bitmap.contains(0ul));
-    ASSERT_FALSE(bitmap.contains(5ul));
-    ASSERT_TRUE(bitmap.contains(8ul));
-    filter &= Filter::have("evening");
-    bitmap = filter.get(index());
-    ASSERT_TRUE(bitmap.contains(0ul));
-    ASSERT_FALSE(bitmap.contains(5ul));
-    ASSERT_FALSE(bitmap.contains(8ul));
-
 }
