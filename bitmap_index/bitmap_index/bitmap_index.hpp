@@ -15,7 +15,7 @@ class BitmapIndex {
 public:
     BitmapIndex(fs::path dir);
 
-    ~BitmapIndex();
+    virtual ~BitmapIndex();
 
     void insert(const std::string& key, uint64_t value);
 

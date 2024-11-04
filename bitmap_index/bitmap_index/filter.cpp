@@ -16,7 +16,7 @@ public:
 
     roaring::Roaring64Map exec(BitmapIndex& index) override final {
         return index.getByKey(term_);
-    };
+    }
 
     std::unique_ptr<IFilter> copy() override final {
         return std::make_unique<HaveFilter>(term_);
@@ -41,7 +41,7 @@ public:
             bitmap |= value;
         }
         return bitmap;
-    };
+    }
 
     std::unique_ptr<IFilter> copy() override final {
         return std::make_unique<BetweenFilter>(left_, right_);
@@ -82,7 +82,7 @@ public:
             }
         }
         return {};
-    };
+    }
 
     std::unique_ptr<IFilter> copy() {
         return std::make_unique<BinaryFilter>(

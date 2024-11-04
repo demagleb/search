@@ -1,4 +1,4 @@
-#include <inverted_index/inverted_index.hpp>
+#include <wildcard_index/wildcard_index.hpp>
 #include <gtest/gtest.h>
 #include <filesystem>
 #include <memory>
@@ -25,16 +25,16 @@ inline std::string dirName()
 
 } // namespace
 
-class InvertedIndexFixture : public testing::Test {
+class WildcardIndexFixture : public testing::Test {
 public:
-    InvertedIndexFixture()
+    WildcardIndexFixture()
         : dir_(std::filesystem::temp_directory_path() / dirName())
     {
         std::filesystem::create_directory(dir_);
-        index_ = std::make_unique<inverted_index::InvertedIndex>(dir_);
+        index_ = std::make_unique<wildcard_index::WildcardIndex>(dir_);
     }
 
-    inverted_index::InvertedIndex& index() { return *index_; }
+    wildcard_index::WildcardIndex& index() { return *index_; }
 
     const std::filesystem::path& dir() const { return dir_; }
 
@@ -46,7 +46,5 @@ public:
 
 private:
     const std::filesystem::path dir_;
-    std::unique_ptr<inverted_index::InvertedIndex> index_;
+    std::unique_ptr<wildcard_index::WildcardIndex> index_;
 };
-
-// LSMFixture<> getFixture() { return LSMFixture<>(); };
