@@ -1,3 +1,4 @@
+#include "fmt/base.h"
 #include <bitmap_index/bitmap_index.hpp>
 #include <bitmap_index/bitmap_merge.hpp>
 #include <bitmap_index/helpers.hpp>
@@ -47,7 +48,7 @@ roaring::Roaring64Map BitmapIndex::getByKey(const std::string& key)
     return bitmap;
 }
 
-std::generator<roaring::Roaring64Map&> BitmapIndex::getByKeyRange(const std::string& left, const std::string& right)
+std::generator<roaring::Roaring64Map&> BitmapIndex::getByKeyRange(std::string left, std::string right)
 {
     auto memtableIter = memtable_.lower_bound(left);
     roaring::Roaring64Map bitmap;

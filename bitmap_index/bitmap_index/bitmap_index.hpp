@@ -20,7 +20,7 @@ public:
     void insert(const std::string& key, uint64_t value);
 
     roaring::Roaring64Map getByKey(const std::string& key);
-    std::generator<roaring::Roaring64Map&> getByKeyRange(const std::string& left, const std::string& right);
+    std::generator<roaring::Roaring64Map&> getByKeyRange(std::string left, std::string right);
 
     void dump();
 

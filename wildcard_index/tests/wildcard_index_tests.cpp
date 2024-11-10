@@ -1,4 +1,3 @@
-#include <cstdint>
 #include <fixture.hpp>
 #include <wildcard_index/tokenize.hpp>
 
