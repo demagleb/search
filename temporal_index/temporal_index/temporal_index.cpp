@@ -11,17 +11,29 @@ namespace {
 
 using namespace fmt::literals;
 
-std::string bitKey(TemporalIndex::TimestampType type, uint64_t bitPos, bool bitValue) {
+std::string bitKey(TemporalIndex::TimestampType type, uint64_t bitPos) {
     switch (type) {
         case TemporalIndex::TimestampType::Begin : {
-            return fmt::format("_begin_{bitPos}_{bitValue}",
-                "bitPos"_a = bitPos,
-                "bitValue"_a = bitValue);
+            return fmt::format("_begin_{bitPos}",
+                "bitPos"_a = bitPos);
         }
         case TemporalIndex::TimestampType::End : {
-            return fmt::format("_end_{bitPos}_{bitValue}",
-                "bitPos"_a = bitPos,
-                "bitValue"_a = bitValue);
+            return fmt::format("_end_{bitPos}",
+                "bitPos"_a = bitPos);
+        }
+    }
+}
+
+std::string allKey(TemporalIndex::TimestampType type) {
+    static const std::string BEGIN_ALL = "_begin_all";
+    static const std::string END_ALL = "_end_all";
+
+    switch (type) {
+        case TemporalIndex::TimestampType::Begin : {
+            return BEGIN_ALL;
+        }
+        case TemporalIndex::TimestampType::End : {
+            return END_ALL;
         }
     }
 }
@@ -30,59 +42,63 @@ std::string bitKey(TemporalIndex::TimestampType type, uint64_t bitPos, bool bitV
 
 void TemporalIndex::insertTimestamp(uint64_t key, uint64_t ts, TimestampType type)
 {
+    insert(allKey(type), key);
     for (size_t bitPos = 0; bitPos < sizeof(ts) * 8; ++bitPos) {
-        insert(bitKey(type, bitPos, ts & (1ul << bitPos)), key);
+        if (ts & (1ul << bitPos)) {
+            insert(bitKey(type, bitPos), key);
+        }
     }
 }
 
 roaring::Roaring64Map TemporalIndex::getWithGreaterEqualTimestamp(uint64_t ts, TimestampType type)
 {
     roaring::Roaring64Map result;
-    std::optional<roaring::Roaring64Map> disjunction;
+    std::optional<roaring::Roaring64Map> conjunction;
     for (size_t bitPos = sizeof(ts) * 8 - 1; bitPos < sizeof(ts) * 8; --bitPos) {
         bool bitValue = ts & (1ul << bitPos);
         if (!bitValue) {
-            if (disjunction) {
-                result |= *disjunction & getByKey(bitKey(type, bitPos, true));
+            if (conjunction) {
+                result |= *conjunction & getByKey(bitKey(type, bitPos));
             } else {
-                result |= getByKey(bitKey(type, bitPos, true));
+                result |= getByKey(bitKey(type, bitPos));
             }
             continue;
         }
-        if (disjunction) {
-            *disjunction &= getByKey(bitKey(type, bitPos, true));
+        if (conjunction) {
+            *conjunction &= getByKey(bitKey(type, bitPos));
         } else {
-            disjunction = getByKey(bitKey(type, bitPos, true));
+            conjunction = getByKey(bitKey(type, bitPos));
         }
     }
-    if (disjunction) {
-        result |= *disjunction;
+    if (conjunction) {
+        result |= *conjunction;
     }
     return result;
 }
 
 roaring::Roaring64Map TemporalIndex::getWithLessEqualTimestamp(uint64_t ts, TimestampType type)
 {
+    roaring::Roaring64Map all = getByKey(allKey(type));
     roaring::Roaring64Map result;
-    std::optional<roaring::Roaring64Map> disjunction;
+    std::optional<roaring::Roaring64Map> conjunction;
     for (size_t bitPos = sizeof(ts) * 8 - 1; bitPos < sizeof(ts) * 8; --bitPos) {
         bool bitValue = ts & (1ul << bitPos);
         if (bitValue) {
-            if (disjunction) {
-                result |= *disjunction & getByKey(bitKey(type, bitPos, false));
+            if (conjunction) {
+                result |= *conjunction & (all - getByKey(bitKey(type, bitPos)));
             } else {
-                result |= getByKey(bitKey(type, bitPos, false));
+                result |= all - getByKey(bitKey(type, bitPos));
             }
             continue;
         }
-        if (disjunction) {
-            *disjunction &= getByKey(bitKey(type, bitPos, false));
+        if (conjunction) {
+            *conjunction &= all - getByKey(bitKey(type, bitPos));
         } else {
-            disjunction = getByKey(bitKey(type, bitPos, false));
+            conjunction = all - getByKey(bitKey(type, bitPos));
         }
     }
-    if (disjunction) {
-        result |= *disjunction;
+    if (conjunction) {
+        result |= *conjunction;
     }
     return result;
 }

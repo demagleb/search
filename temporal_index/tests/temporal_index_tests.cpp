@@ -1,4 +1,3 @@
-#include "fmt/base.h"
 #include <fixture.hpp>
 #include <temporal_index/filter.hpp>
 
