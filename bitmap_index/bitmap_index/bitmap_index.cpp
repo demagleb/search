@@ -1,4 +1,3 @@
-#include "fmt/base.h"
 #include <bitmap_index/bitmap_index.hpp>
 #include <bitmap_index/bitmap_merge.hpp>
 #include <bitmap_index/helpers.hpp>
