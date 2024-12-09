@@ -113,7 +113,6 @@ roaring::Roaring64Map getWindowsIntersection(std::span<std::deque<structures::Po
 
 roaring::Roaring64Map PositionalIndex::getWithSequence(const std::vector<std::string> &sequence, uint8_t tolerance)
 {
-
     std::vector<std::generator<structures::Posting&>> postingsLists;
     std::vector<std::generator<structures::Posting&>::iterator> iterators;
     std::vector<std::deque<structures::Posting>> windows;
